@@ -3,16 +3,17 @@ import { SpendingHistoryResponse } from "@/utils/types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-type Transaction = { title: string; money: string; date: string };
+type Transaction = { title: string; money: number; date: string };
+
+type GroupedTransactions = Record<string, Transaction[]>;
 
 interface CalendarProps {
   transactions: SpendingHistoryResponse[];
 }
 
 const Calendar = ({ transactions }: CalendarProps) => {
-  const [transactionsByDate, setTransactionsByDate] = useState<
-    Record<string, Transaction[]>
-  >({});
+  const [transactionsByDate, setTransactionsByDate] =
+    useState<GroupedTransactions>({});
 
   const [salary, setSalary] = useState<number>(0);
 
@@ -21,6 +22,7 @@ const Calendar = ({ transactions }: CalendarProps) => {
   useEffect(() => {
     const fetchData = async () => {
       const grouped = await groupTransactionsByDate();
+
       setTransactionsByDate(grouped);
     };
     fetchData();
@@ -69,13 +71,16 @@ const Calendar = ({ transactions }: CalendarProps) => {
 
           {/* 1월의 각 날짜 */}
           {Array.from({ length: daysInMonth }).map((_, index) => {
+            if (index === 0) {
+              return;
+            }
             const date = new Date(currentYear, 0, index + 1)
               .toISOString()
               .split("T")[0]; // YYYY-MM-DD 형식
 
             return (
               <DayBox key={index}>
-                <DayHeader>{index + 1}</DayHeader>
+                <DayHeader>{index}</DayHeader>
                 {transactionsByDate[date]?.length ? (
                   <TransactionList>
                     {transactionsByDate[date].map(({ title, money }, i) => (
