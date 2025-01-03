@@ -14,7 +14,8 @@ type Inputs = {
 };
 
 const TransactionForm = ({ onTransactionAdded }: TransactionFormProps) => {
-  const [date, setDate] = useState<DateValue | null>(null);
+  const today = new Date();
+  const [date, setDate] = useState<DateValue>(today);
 
   const {
     register,
@@ -24,7 +25,7 @@ const TransactionForm = ({ onTransactionAdded }: TransactionFormProps) => {
   } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async ({ title, money }) => {
     await addTransaction({ title, money: parseFloat(money), date });
-    setDate(null);
+    setDate(today);
     reset();
     onTransactionAdded();
   };
