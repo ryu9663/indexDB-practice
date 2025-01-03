@@ -32,6 +32,7 @@ const TransactionForm = ({ onTransactionAdded }: TransactionFormProps) => {
 
   return (
     <>
+      <hr />
       <Form onSubmit={handleSubmit(onSubmit)}>
         <FormItems>
           <FormItem>
@@ -59,7 +60,7 @@ const TransactionForm = ({ onTransactionAdded }: TransactionFormProps) => {
           </FormItem>
         </FormItems>
 
-        <Button type="submit">Add Transaction</Button>
+        <Button type="submit">지출 입력</Button>
       </Form>
     </>
   );

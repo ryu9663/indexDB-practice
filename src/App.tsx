@@ -4,6 +4,7 @@ import TransactionForm from "@/components/TransactionForm";
 import Calendar from "@/components/Calendar";
 import styled from "styled-components";
 import { SpendingHistoryResponse } from "@/utils/types";
+import { SalaryForm } from "@/components/SalaryForm";
 
 const App: React.FC = () => {
   const [transactions, setTransactions] = useState<SpendingHistoryResponse[]>(
@@ -22,6 +23,7 @@ const App: React.FC = () => {
   return (
     <Layout>
       <Heading1>가계부</Heading1>
+      <SalaryForm onTransactionAdded={fetchTransactions} />
       <TransactionForm onTransactionAdded={fetchTransactions} />
       <Calendar transactions={transactions} />
     </Layout>

@@ -12,6 +12,10 @@ export const initDB = async () => {
           autoIncrement: true,
         });
       }
+
+      if (!db.objectStoreNames.contains("salary")) {
+        db.createObjectStore("salary");
+      }
     },
   });
   return db;
@@ -47,4 +51,22 @@ export const groupTransactionsByDate = async () => {
     return acc;
   }, {} as Record<string, { title: string; money: string; date: string }[]>);
   return grouped;
+};
+
+export const addSalaryForMonth = async (salary: number) => {
+  const db = await initDB();
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const key = `${year}-${month}`;
+  await db.add("salary", salary, key);
+};
+
+export const getSalaryForMonth = async () => {
+  const db = await initDB();
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const key = `${year}-${month}`;
+  return await db.get("salary", key);
 };
