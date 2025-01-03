@@ -1,4 +1,4 @@
-import { groupTransactionsByDate } from "@/utils/db";
+import { getSalaryForMonth, groupTransactionsByDate } from "@/utils/db";
 import { SpendingHistoryResponse } from "@/utils/types";
 import { useEffect, useState } from "react";
 import styled from "styled-components";
@@ -14,6 +14,8 @@ const Calendar = ({ transactions }: CalendarProps) => {
     Record<string, Transaction[]>
   >({});
 
+  const [salary, setSalary] = useState<number>(0);
+
   const daysOfWeek = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
   useEffect(() => {
@@ -24,6 +26,15 @@ const Calendar = ({ transactions }: CalendarProps) => {
     fetchData();
   }, [transactions]);
 
+  useEffect(() => {
+    const fetchSalary = async () => {
+      const _salary = await getSalaryForMonth();
+      setSalary(_salary);
+    };
+
+    fetchSalary();
+  }, [transactions]);
+
   // 올해 1월 1일 날짜 계산
   const currentYear = new Date().getFullYear();
   const firstDayOfMonth = new Date(currentYear, 0, 1); // 1월 1일
@@ -32,13 +43,15 @@ const Calendar = ({ transactions }: CalendarProps) => {
   // 1월의 총 일수 계산
   const daysInMonth = new Date(currentYear, 1, 0).getDate();
 
-  const totalSpending = transactions
-    .reduce((acc, cur) => acc + cur.money, 0)
-    .toLocaleString();
+  const totalSpending = transactions.reduce((acc, cur) => acc + cur.money, 0);
 
   return (
     <Wrapper>
-      <TotalSpending>총 쓴 금액: {totalSpending}원</TotalSpending>
+      <MoneyInfos>
+        <Info>월급: {salary?.toLocaleString() || 0}원,</Info>
+        <Info>총 쓴 금액: {totalSpending.toLocaleString()}원,</Info>
+        <Info>잔액: {(salary - totalSpending).toLocaleString()}원</Info>
+      </MoneyInfos>
       <CalendarWrapper>
         {/* 요일 헤더 */}
         <CalendarHeader>
@@ -94,7 +107,12 @@ const Wrapper = styled.div`
   gap: 20px;
 `;
 
-const TotalSpending = styled.div`
+const MoneyInfos = styled.div`
+  display: flex;
+  gap: 10px;
+`;
+
+const Info = styled.div`
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 20px;
